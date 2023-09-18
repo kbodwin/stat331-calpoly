@@ -42,44 +42,37 @@ fontsize: 11pt
 
 **Dr. Kelly Bodwin**
 
-![](headshot_computer.jpg){height='5in' fig-align="left"}
+![](headshot_computer.jpg){height="5in" fig-align="left"}
 
--	Email: [kbodwin@calpoly.edu](mailto:kbodwin@calpoly.edu?subject=Stat%20331/531)
--	Office: Building 25 Office 106 (by Statistics Department Office) 
+-   Email: [kbodwin\@calpoly.edu](mailto:kbodwin@calpoly.edu?subject=Stat%20331/531)
+-   Office: Building 25 Office 106 (by Statistics Department Office)
 
 **Course Discord:**
 
-For questions of general interest, such as course clarifications or conceptual
-questions, please use the course Discord page (you will join this Week 1). I
-encourage you to give your post a concise and informative initial sentence, so that other people can find it. For example, *“How do I color bars in a barplot with ggplot?”* is a better opening sentence than *“help with plotting”*.
+For questions of general interest, such as course clarifications or conceptual questions, please use the course Discord page (you will join this Week 1). I encourage you to give your post a concise and informative initial sentence, so that other people can find it. For example, *"How do I color bars in a barplot with ggplot?"* is a better opening sentence than *"help with plotting"*.
 
-While your posts are not anonymous, in this case there is no such thing as a bad
-question!  This is the best way to get a quick answer, from me or maybe even from
-a classmate, and your questions almost certainly help out classmates struggling
-with similar issues.  (In fact, if you send me an email or private message with a
-non-private question, I will probably answer it on Discord instead!)
+While your posts are not anonymous, in this case there is no such thing as a bad question! This is the best way to get a quick answer, from me or maybe even from a classmate, and your questions almost certainly help out classmates struggling with similar issues. (In fact, if you send me an email or private message with a non-private question, I will probably answer it on Discord instead!)
 
 ## Course Info
 
-**Class Meeting Times:** 
+**Class Meeting Times:**
 
-Tuesdays/Thursdays
-12:10pm - 2:00pm
+Tuesdays/Thursdays 12:10pm - 2:00pm
 
 **Room:** 180-272 (Baker Center)
 
 ## Office Hours
 
-| Day       | Time                                                                           |
-|-----------|--------------------------------------------------------------------------------|
-| Mondays   | 12:30pm - 2:00pm, in-person (25-106)                                          |
-| Wednesdays| 12:30pm - 2:00pm, in-person (25-106)                                          |
-| Fridays   | 1:15 - 2:15pm, remote by appt (<https://calendly.com/kbodwin/office-hours-remote>) |
+| Day                | Time                                                                               |
+|--------------------|------------------------------------------------------------------------------------|
+| Mondays            | 12:30pm - 2:00pm, in-person (25-106)                                               |
+| Wednesdays         | 12:30pm - 2:00pm, in-person (25-106)                                               |
+| Fridays most weeks | 1:15 - 2:15pm, remote by appt (<https://calendly.com/kbodwin/office-hours-remote>) |
+| Bonus times   |   variable, remote by appt (<https://calendly.com/kbodwin/office-hours-remote>)    |
 
 Zoom office hours by appointment are required to be scheduled at least 1-hour prior to the meeting.
 
-I will likely also be on Discord throughout the day, so please don't hesitate to 
-put questions there, even if it is late at night or early in the morning. 
+I will likely also be on Discord throughout the day, so please don't hesitate to put questions there, even if it is late at night or early in the morning.
 
 ```{r}
 #| include: false
@@ -108,7 +101,7 @@ library(lubridate)
 # Any number of ways to identify dates in R, but we'll use {lubridate} and the ymd() function here.
 # Format: YYYYMMDD. In this example, 4 January 2022.
 # What are the full dates of the semester?
-semester_dates <- seq(ymd(20230920), ymd(20231215), by=1)
+semester_dates <- seq(ymd(20230917), ymd(20231216), by=1)
 # Weekday(s) of class
 class_wdays <- c("Tue", "Thu")
 
@@ -135,7 +128,7 @@ wom <- function(date) {
     return((mday(date) + (first - 2)) %/% 7 + 1)
   }
 # Create a data frame of dates, assign to Cal
-Cal <- tibble(date = seq(ymd(20230917), ymd(20231216), by=1))  %>%
+Cal <- tibble(date = seq(ymd(20230901), ymd(20231231), by=1))  %>%
   mutate(mon = lubridate::month(date, label=T, abbr=F),
          wkdy = weekdays(date, abbreviate=T),
          wkdy = fct_relevel(wkdy, "Sun", "Mon", "Tue", "Wed", "Thu","Fri","Sat"), # make sure Sunday comes first
@@ -151,7 +144,7 @@ Cal <- Cal %>%
   mutate(category = case_when(
     # project ~ "Project",
     exams ~ "Exam",
-    not_here ~ "No Class or Office Hours",
+    not_here ~ "No Class/OH",
     semester & wkdy %in% class_wdays & !not_here & !exam_wk ~ "Class Day",
     #remote ~ "No "
     semester ~ "Finals",
@@ -160,7 +153,7 @@ Cal <- Cal %>%
 class_cal <- Cal %>% 
   ggplot(.,aes(wkdy, week)) +
   theme_bw() +
-  theme(aspect.ratio = 1, 
+  theme(aspect.ratio = 0.5, 
         panel.grid.major.x = element_blank(),
         legend.position = "right",
         # legend.position = c(1, 0), 
@@ -172,7 +165,7 @@ class_cal <- Cal %>%
         axis.ticks.y = element_blank(), 
         axis.text.y = element_blank()) +
   geom_tile(alpha=0.8, aes(fill=category), color="black", size=.45) +
-  facet_wrap(~mon, scales = "free", ncol=3) +
+  facet_wrap(~mon, scales = "free", ncol=2) +
   geom_text(aes(label = day, color = semester & (!not_here))) +
   # put your y-axis down, flip it, and reverse it
   scale_y_reverse(breaks=NULL) +
@@ -180,11 +173,11 @@ class_cal <- Cal %>%
   scale_color_manual(values = c("FALSE" = "grey80", "TRUE" = "black"), guide = "none") + 
   scale_fill_manual(values=c("Class Day"="purple", 
                              "Finals"="white",
-                             "No Class or Office Hours" = "darkgreen",
+                             "No Class/OH" = "darkgrey",
                              "NA" = "white", # I like these whited out...
                              "Exam"="orange"),
                     #... but also suppress a label for a non-class semester day
-                    breaks=c("Finals", "No Class or Office Hours", "Class Day","Exam"))
+                    breaks=c("Finals", "No Class/OH", "Class Day","Exam"))
 class_cal
 
 exam_days <- filter(Cal, category == "Exam") %>%
@@ -236,18 +229,18 @@ This course will teach you the foundations of statistical computing principles i
 
 After taking this course, you will be able to:
 
-+ Work with the RStudio Integrated development environment (IDE) and quarto documents.
-+ Import, manage, and clean data from a wide variety of data sources.
-+ Visualize and summarize data for informative exploratory data analysis and presentations.
-+ Write efficient, well-documented, and tidy `R` code.
-+ Program random experiments and simulations from probability models.
+-   Work with the RStudio Integrated development environment (IDE) and quarto documents.
+-   Import, manage, and clean data from a wide variety of data sources.
+-   Visualize and summarize data for informative exploratory data analysis and presentations.
+-   Write efficient, well-documented, and tidy `R` code.
+-   Program random experiments and simulations from probability models.
 
 Additionally, it is my hope that you will learn to:
 
-+ Extend your `R` skills independently through documentation and online resources.
-+ Be thoughtful, deliberate, and ethical in your use of `R` and similar tools.
-+ Use R to be playful, creative, and fun!
-+ Contribute to and participate in the R Open Source Community.
+-   Extend your `R` skills independently through documentation and online resources.
+-   Be thoughtful, deliberate, and ethical in your use of `R` and similar tools.
+-   Use R to be playful, creative, and fun!
+-   Contribute to and participate in the R Open Source Community.
 
 # Course Resources
 
@@ -259,9 +252,9 @@ This text has been modified from material by [Dr. Susan VanderPlas](https://gith
 
 In addition, you may find it useful to reference some of the following resources. Most are available online for free.
 
-+ [R for Data Science (2nd edition)](https://r4ds.hadley.nz/)
-+ [Modern Dive](https://moderndive.com/1-getting-started.html)
-+ [Advanced R](http://adv-r.had.co.nz/)
+-   [R for Data Science (2nd edition)](https://r4ds.hadley.nz/)
+-   [Modern Dive](https://moderndive.com/1-getting-started.html)
+-   [Advanced R](http://adv-r.had.co.nz/)
 
 **Equipment**
 
@@ -282,7 +275,7 @@ This schedule is tentative and subject to change.
 #| fig-width: 8
 #| fig-height: 3.5
 #| fig-pos: 'h'
-#| fig-cap: "Note: Tuesday, January 17th will follow a Monday class schedule."
+
 class_cal
 ```
 
@@ -300,22 +293,21 @@ kableExtra::kable(caption = "Tentative schedule of class topics and important du
 
 Your grade in STAT 331/531 will contain the following components:
 
-| Assignments          | Weight |
-| -------------------- | -------|
-| Check-ins            | 5%     |
-| Practice Activities  | 15%    |
-| Lab Assignments      | 25%    |
-| Challenge Points     | 5%     |
-| Midterm Exam         | 15%    |
-| Final Exam           | 20%    |
-| Final Project        | 20%    |
-
+| Assignments         | Weight |
+|---------------------|--------|
+| Check-ins           | 5%     |
+| Practice Activities | 15%    |
+| Lab Assignments     | 25%    |
+| Challenge Points    | 5%     |
+| Midterm Exam        | 15%    |
+| Final Exam          | 20%    |
+| Final Project       | 20%    |
 
 Lower bounds for grade cutoffs are shown in the following table. I sometimes "round up" grades at the end of the quarter, but no promises; treat these cutoffs as if they are hard boundaries, and don't put yourself in a position to be close-but-not-quite!
 
 | Letter grade | X +  | X   | X - |
 |--------------|------|-----|-----|
-| A            |  .   | 93  | 90  |
+| A            | .    | 93  | 90  |
 | B            | 87   | 83  | 80  |
 | C            | 77   | 73  | 70  |
 | D            | 67   | 63  | 60  |
@@ -330,169 +322,103 @@ Interpretation of this table:
 
 ### General Evaluation Criteria
 
-In every assignment, discussion, and written component of this class, you are
-expected to demonstrate that you are intellectually engaging with the material
-and that you understand the code you are writing.
+In every assignment, discussion, and written component of this class, you are expected to demonstrate that you are intellectually engaging with the material and that you understand the code you are writing.
 
-I will evaluate you based on this engagement, which means that technically
-correct answers that do not demonstrate **your** understanding will receive no credit.
+I will evaluate you based on this engagement, which means that technically correct answers that do not demonstrate **your** understanding will receive no credit.
 
-This is not to encourage you to add unnecessary complexity
-to your answer - simple, elegant solutions are always preferable to unwieldly,
-complex solutions that accomplish the same task. I am simply looking for you to 
-apply your own ideas and thought process to the task, and not solely rely on
-online resources or guess-and-check code tweaking to arrive at working code.
+This is not to encourage you to add unnecessary complexity to your answer - simple, elegant solutions are always preferable to unwieldly, complex solutions that accomplish the same task. I am simply looking for you to apply your own ideas and thought process to the task, and not solely rely on online resources or guess-and-check code tweaking to arrive at working code.
 
-Grammar and spelling are *not* part of your grade, but your ability to communicate 
-technical information clearly in writing *is*.  Your work will be evaluated not
-just on the correctness of the code, but also on how successfully you articulate
-the goals and interpretations.
+Grammar and spelling are *not* part of your grade, but your ability to communicate technical information clearly in writing *is*. Your work will be evaluated not just on the correctness of the code, but also on how successfully you articulate the goals and interpretations.
 
 ## Assignment Breakdown
 
 ### Check-ins
 
-Each week, you will find short Check-In questions or tasks throughout the text
-to make sure you are prepared for class that week. Make sure you submit your
-answers to these on Canvas to get credit for your efforts. Note that the Canvas
-Check-in quizzes can be submitted up to three times without a penalty - so you
-should get 100% on this part of the course!
+Each week, you will find short Check-In questions or tasks throughout the text to make sure you are prepared for class that week. Make sure you submit your answers to these on Canvas to get credit for your efforts. Note that the Canvas Check-in quizzes can be submitted up to three times without a penalty - so you should get 100% on this part of the course!
 
-+ All responses to Check-ins are due **Wednesdays at 11:59pm**.
+-   All responses to Check-ins are due **Wednesdays at 11:59pm**.
 
 ### Practice Activities
 
-Most weeks, you will be given a Practice Activity to complete, to get the
-hang of the week’s necessary `R` skills. These activities will always result in
-a single, straightforward correct answer, that you will submit via Canvas (one
-attempt). Therefore, there is no reason you should not get full credit in this
-category!
+Most weeks, you will be given a Practice Activity to complete, to get the hang of the week's necessary `R` skills. These activities will always result in a single, straightforward correct answer, that you will submit via Canvas (one attempt). Therefore, there is no reason you should not get full credit in this category!
 
-Since these activities are intended to be your first attempt at new skills, they
-are meant to be done with help from me and your peers. Therefore, you will
-always be given some time in class to work on them. I strongly suggest that you
-attempt to start the activities before class, so you can maximize the utility of
-your in-class time.
+Since these activities are intended to be your first attempt at new skills, they are meant to be done with help from me and your peers. Therefore, you will always be given some time in class to work on them. I strongly suggest that you attempt to start the activities before class, so you can maximize the utility of your in-class time.
 
-+ Practice Activities are due **Fridays at 11:59pm.**
+-   Practice Activities are due **Fridays at 11:59pm.**
 
 ### Lab Assignments
 
-Your typical homework assignments will be weekly labs. You will follow each
-lab's instructions to complete tasks in `R` and submit a knitted .html
-quarto document to Canvas.
+Your typical homework assignments will be weekly labs. You will follow each lab's instructions to complete tasks in `R` and submit a knitted .html quarto document to Canvas.
 
-Most weeks, there will be class time on Thursdays dedicated to working on completing lab
-assignments.
+Most weeks, there will be class time on Thursdays dedicated to working on completing lab assignments.
 
-+ Labs are due on the following **Mondays at 11:59pm**.
+-   Labs are due on the following **Mondays at 11:59pm**.
 
 ### Challenges
 
-With each Lab Assignment will come a Challenge, asking you to try skills beyond
-what is required that week. Challenges are individual submissions, worth 10
-points each. Full credit is given for any good faith attempt.
+With each Lab Assignment will come a Challenge, asking you to try skills beyond what is required that week. Challenges are individual submissions, worth 10 points each. Full credit is given for any good faith attempt.
 
-As these are extensions to the lab assignments, they are a great opportunity to
-discuss your ideas with your classmates. However, I do expect that these
-collaborations are about ideas and no `R` code is shared between individuals. Each
-person’s Challenge submission is expected to reflect their own thinking, and
-thus copying the work of others does not provide me with any information about
-your learning.
+As these are extensions to the lab assignments, they are a great opportunity to discuss your ideas with your classmates. However, I do expect that these collaborations are about ideas and no `R` code is shared between individuals. Each person's Challenge submission is expected to reflect their own thinking, and thus copying the work of others does not provide me with any information about your learning.
 
-At the end of the quarter, the Challenge points are taken out of 100. However,
-there are only 8 lab assignments! This means that if you only complete (in good
-faith attempts) the challenges associated with each lab, you will receive 80/100
-(or 80%) in this category. In order to achieve 100/100, you must submit
-impressive challenge submissions that earn bonus points and/or complete optional
-Challenge point opportunities provided throughout the quarter.
+At the end of the quarter, the Challenge points are taken out of 100. However, there are only 8 lab assignments! This means that if you only complete (in good faith attempts) the challenges associated with each lab, you will receive 80/100 (or 80%) in this category. In order to achieve 100/100, you must submit impressive challenge submissions that earn bonus points and/or complete optional Challenge point opportunities provided throughout the quarter.
 
-Extra bonus points beyond 100 earn you extra credit toward your overall course
-grade.
+Extra bonus points beyond 100 earn you extra credit toward your overall course grade.
 
-+ Challenges associated with labs are due on **Wednesdays at 11:59pm**.
-+ Watch Canvas for additional/optional Challenge point opportunities and deadlines.
+-   Challenges associated with labs are due on **Wednesdays at 11:59pm**.
+-   Watch Canvas for additional/optional Challenge point opportunities and deadlines.
 
 ## Attendance & Participation
 
-I do not take formal attendance in this class. However, it is my expectation
-that you remain in class and on task until you have finished all your activities
-and assignments. Consistent, repeated failure to attend class or actively
-participate in portions of the course will affect the demonstration of your
-engagement with the course.
+I do not take formal attendance in this class. However, it is my expectation that you remain in class and on task until you have finished all your activities and assignments. Consistent, repeated failure to attend class or actively participate in portions of the course will affect the demonstration of your engagement with the course.
 
-If you are feeling ill, please **do not come to class**. Instead, email me,
-review the material and work on the participation activity and weekly lab
-assignment; then schedule an appointment with me to meet virtually if you need it.
+If you are feeling ill, please **do not come to class**. Instead, email me, review the material and work on the participation activity and weekly lab assignment; then schedule an appointment with me to meet virtually if you need it.
 
 ## Late Policy
 
-+ Check-ins need to be done by Thursdays; ideally sooner.  There is not much utility
-to the check-ins after both classes that week are over.  Therefore, no check-ins
-are accepted for credit after the deadline.
+-   Check-ins need to be done by Thursdays; ideally sooner. There is not much utility to the check-ins after both classes that week are over. Therefore, no check-ins are accepted for credit after the deadline.
 
-+ Solutions to Practice Activities will be posted immediately after the due date. 
-Therefore, no late Practice Activities will be accepted for credit.
+-   Solutions to Practice Activities will be posted immediately after the due date. Therefore, no late Practice Activities will be accepted for credit.
 
-+ For Lab and Challenge work, Canvas will automatically apply a 10% grade deduction for each 
-day past the due date. The minimum grade for (complete) late work is 50%. This means it is always 
-worth it to go back and catch up on a Lab you missed, even if many weeks have passed!
+-   For Lab and Challenge work, Canvas will automatically apply a 10% grade deduction for each day past the due date. The minimum grade for (complete) late work is 50%. This means it is always worth it to go back and catch up on a Lab you missed, even if many weeks have passed!
 
 ### Auto-extensions
 
-I know that sometimes life gets in the way of your academic plans, and I do not want
-to be in the position of deciding whose extenuating circumstances qualify for extensions.
+I know that sometimes life gets in the way of your academic plans, and I do not want to be in the position of deciding whose extenuating circumstances qualify for extensions.
 
-Therefore, I offer everyone three auto-extensions for the quarter.  To take this auto-extension,
-you **must** fill out the Google Form linked on Canvas **at least 24 hours before the assignment deadline**.  
+Therefore, I offer everyone three auto-extensions for the quarter. To take this auto-extension, you **must** fill out the Google Form linked on Canvas **at least 24 hours before the assignment deadline**.
 
-No other extension request (e.g. by email, in person, by Discord) will be honored for **any** reason. 
+No other extension request (e.g. by email, in person, by Discord) will be honored for **any** reason.
 
-This policy **does** apply to Check-ins, Practice Activities, Labs, or Challenges.
-It **does not** apply to Exams or the Final Project.
+This policy **does** apply to Check-ins, Practice Activities, Labs, or Challenges. It **does not** apply to Exams or the Final Project.
 
 # Course Expectations
 
-You will get out of this course what you put in. In return for your hard work,
-I will do my best to be a reliable resource and to support your learning.
+You will get out of this course what you put in. In return for your hard work, I will do my best to be a reliable resource and to support your learning.
 
 *I pledge to:*
 
-+ *Stay abreast of the latest ideas in my field.* 
-+ *Teach you what I believe you need to know; with all the enthusiasm I possess.*
-+ *Invite your comments and questions and respond constructively.*
-+ *Make myself available to you outside of class (within reason).*
-+ *Evaluate your work carefully and return it promptly with feedback.* 
-+ *Be as fair, respectful, and understanding as I can humanly be.*
-+ *Provide whatever help I can if you need support beyond the scope of this course.* 
+-   *Stay abreast of the latest ideas in my field.*
+-   *Teach you what I believe you need to know; with all the enthusiasm I possess.*
+-   *Invite your comments and questions and respond constructively.*
+-   *Make myself available to you outside of class (within reason).*
+-   *Evaluate your work carefully and return it promptly with feedback.*
+-   *Be as fair, respectful, and understanding as I can humanly be.*
+-   *Provide whatever help I can if you need support beyond the scope of this course.*
 
 *I expect you to:*
 
-+ *Show up for class each day unless you are completely finished with that week's work.* 
-+ *Do your reading and other assignments outside of class and be prepared for each class meeting.*
-+ *Focus during class on the work we’re doing and not on extraneous matters (like whoever or whatever is on your phone at the moment).* 
-+ *Participate in class discussions.*
-+ *Be respectful of your fellow students and their points of view.* 
-+ *Devote effort and energy to __learning__, not just getting a grade.*
+-   *Show up for class each day unless you are completely finished with that week's work.*
+-   *Do your reading and other assignments outside of class and be prepared for each class meeting.*
+-   *Focus during class on the work we're doing and not on extraneous matters (like whoever or whatever is on your phone at the moment).*
+-   *Participate in class discussions.*
+-   *Be respectful of your fellow students and their points of view.*
+-   *Devote effort and energy to **learning**, not just getting a grade.*
 
 ### Make Mistakes!
 
-Programming is the process of making a series of silly or stupid mistakes, and
-then slowly fixing each mistake (while adding a few more). The only way to know
-how to fix these mistakes (and avoid them in the future) is to make them.
-(Sometimes, you have to make the same mistake a few dozen times before you can
-avoid it in the future). At some point during the class, you will find that
-you've spent 30 minutes staring at an error caused by a typo, a space, a
-parenthesis in the wrong place. You may ask for help debugging this weird error,
-only to have someone immediately point out the problem... it is always easier to
-see these things in someone else's code. This is part of programming, it is
-normal, and you shouldn't feel embarrassed or sorry (unless you put no effort
-into troubleshooting the problem before you asked for help)
+Programming is the process of making a series of silly or stupid mistakes, and then slowly fixing each mistake (while adding a few more). The only way to know how to fix these mistakes (and avoid them in the future) is to make them. (Sometimes, you have to make the same mistake a few dozen times before you can avoid it in the future). At some point during the class, you will find that you've spent 30 minutes staring at an error caused by a typo, a space, a parenthesis in the wrong place. You may ask for help debugging this weird error, only to have someone immediately point out the problem... it is always easier to see these things in someone else's code. This is part of programming, it is normal, and you shouldn't feel embarrassed or sorry (unless you put no effort into troubleshooting the problem before you asked for help)
 
-If you manage to produce an error I haven't seen before, that's exciting!
-Your creativity has achieved something new, and that achievement should be celebrated.
-Each fresh bizarre error is an opportunity to learn a bit more about the
-programming language, the operating system, or the interaction between the two.
+If you manage to produce an error I haven't seen before, that's exciting! Your creativity has achieved something new, and that achievement should be celebrated. Each fresh bizarre error is an opportunity to learn a bit more about the programming language, the operating system, or the interaction between the two.
 
 # University Policies
 
@@ -500,59 +426,34 @@ See [academicprograms.calpoly.edu/content/academicpolicies](https://academicprog
 
 ## Learning Environment and Support
 
-I believe everyone is capable of learning statistics and programming with proper support. It is my goal for everyone to feel safe and comfortable in my classroom. If
-there is any way I can make the course more welcoming for you, please do not
-hesitate to ask.
+I believe everyone is capable of learning statistics and programming with proper support. It is my goal for everyone to feel safe and comfortable in my classroom. If there is any way I can make the course more welcoming for you, please do not hesitate to ask.
 
-In particular, if you have a disability, I will gladly work with you to make
-this class accessible.
+In particular, if you have a disability, I will gladly work with you to make this class accessible.
 
-I encourage you to also contact the Disability Resource Center (Building 124,
-Room 119 or at 805-756-1395), who can help you register for extra accommodations
-such as extended exam time.
+I encourage you to also contact the Disability Resource Center (Building 124, Room 119 or at 805-756-1395), who can help you register for extra accommodations such as extended exam time.
 
-If you are having difficulty affording groceries, lacking a safe & stable place 
-to live, or needing additional essential supports, please see Canvas for a list 
-of Student Support Services at Cal Poly.
+If you are having difficulty affording groceries, lacking a safe & stable place to live, or needing additional essential supports, please see Canvas for a list of Student Support Services at Cal Poly.
 
 ## Academic Integrity and Class Conduct
 
 Simply put, I will not tolerate cheating or plagiarism.
 
-Any incident of dishonesty, copying, exam cheating, or plagiarism will be
-reported to the Office of Student Rights and Responsibilities.
+Any incident of dishonesty, copying, exam cheating, or plagiarism will be reported to the Office of Student Rights and Responsibilities.
 
-Cheating will earn you a grade of 0 on the assignment and an overall grade
-penalty of at least 10%. In circumstances of flagrant cheating, you may be given
-a grade of F in the course.
+Cheating will earn you a grade of 0 on the assignment and an overall grade penalty of at least 10%. In circumstances of flagrant cheating, you may be given a grade of F in the course.
 
-Paraphrasing or quoting another’s work without citing the source is a form of
-academic misconduct. This includes the `R` code produced by someone else!
-Writing code is like writing a paper, it is obvious if you copied-and-pasted a
-sentence from someone else into your paper because the way each person writes is
-different.
+Paraphrasing or quoting another's work without citing the source is a form of academic misconduct. This includes the `R` code produced by someone else! Writing code is like writing a paper, it is obvious if you copied-and-pasted a sentence from someone else into your paper because the way each person writes is different.
 
-Even inadvertent or unintentional misuse or appropriation of another’s work
-(such as relying heavily on source material that is not expressly acknowledged)
-is considered plagiarism. If you are struggling with writing the `R` code for an
-assignment, please reach out to me. I would prefer that I get to help you rather
-than you spending hours Googling things and get nowhere!
+Even inadvertent or unintentional misuse or appropriation of another's work (such as relying heavily on source material that is not expressly acknowledged) is considered plagiarism. If you are struggling with writing the `R` code for an assignment, please reach out to me. I would prefer that I get to help you rather than you spending hours Googling things and get nowhere!
 
-If you have any questions about using and citing sources, you are expected to
-ask for clarification.
+If you have any questions about using and citing sources, you are expected to ask for clarification.
 
-For more information about what constitutes cheating and plagiarism, please see
-[academicprograms.calpoly.edu/content/academicpolicies/Cheating](https://academicprograms.calpoly.edu/content/academicpolicies/Cheating).
+For more information about what constitutes cheating and plagiarism, please see [academicprograms.calpoly.edu/content/academicpolicies/Cheating](https://academicprograms.calpoly.edu/content/academicpolicies/Cheating).
 
 ### AI/Chat GPT
 
-The introduction of tools like Chat GPT is exciting for teaching and learning, 
-but it comes with a whole new set of complicated questions about academic integrity.
+The introduction of tools like Chat GPT is exciting for teaching and learning, but it comes with a whole new set of complicated questions about academic integrity.
 
-My personal class policy is that AI tools should be treated like a human tutor.
-Asking the AI for help understanding concepts, pointers towards useful functions
-or resources, or help debugging your code?  Totally fine; in fact, I encourage you
-to try this out!  Asking the AI to directly write your code or text for you?  Not okay.
+My personal class policy is that AI tools should be treated like a human tutor. Asking the AI for help understanding concepts, pointers towards useful functions or resources, or help debugging your code? Totally fine; in fact, I encourage you to try this out! Asking the AI to directly write your code or text for you? Not okay.
 
 And of course, AI tools should **not** be accessed in exam settings.
-
